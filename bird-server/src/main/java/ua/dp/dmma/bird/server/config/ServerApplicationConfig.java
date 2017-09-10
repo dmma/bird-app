@@ -7,6 +7,9 @@ import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.server.spring.scope.RequestContextFilter;
 
 /**
+ * The resource configuration for configuring a web application.<br>
+ * Use this class for registering of your resources
+ * 
  * @author dmma
  */
 @ApplicationPath("/")

@@ -104,7 +104,7 @@
 				<artifactId>exec-maven-plugin</artifactId>
 				<configuration>
 					<mainClass>ua.dp.dmma.bird.server.application.ServerApplication</mainClass>
-					<commandlineArgs>-p 7707 -pc 2 -d /home/lex</commandlineArgs>
+					<commandlineArgs>-p 7707 -pc 3 -d /home/lex</commandlineArgs>
 				</configuration>
 			</plugin>
 		</plugins>

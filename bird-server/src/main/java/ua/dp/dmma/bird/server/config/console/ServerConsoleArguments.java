@@ -3,7 +3,11 @@ package ua.dp.dmma.bird.server.config.console;
 import com.beust.jcommander.Parameter;
 
 /**
+ * Object wrapper for holding, parsing and validating of server's console
+ * arguments.
  * 
+ * @see com.beust.jcommander.JCommander
+ * @see com.beust.jcommander.JCommander.Builder
  * @author dmma
  *
  */
@@ -32,9 +36,16 @@ public class ServerConsoleArguments {
 		this.folder = folder;
 	}
 
+	public Integer getProcCount() {
+		return procCount;
+	}
+
+	public void setProcCount(Integer procCount) {
+		this.procCount = procCount;
+	}
+
 	@Override
 	public String toString() {
 		return "ServerConsoleArguments [port=" + port + ", procCount=" + procCount + ", folder=" + folder + "]";
 	}
-
 }

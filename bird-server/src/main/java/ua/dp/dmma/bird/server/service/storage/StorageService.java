@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -43,6 +44,7 @@ public class StorageService implements InitializingBean {
 	private List<BirdSightingData> birdSightingData = new CopyOnWriteArrayList<>();
 	private Path birdPath;
 	private Path birdSightingPath;
+	private boolean isDeamonWriterInitialized;
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
@@ -54,6 +56,12 @@ public class StorageService implements InitializingBean {
 	}
 
 	public boolean addBird(BirdData birdData) {
+		synchronized (this) {
+			if (!isDeamonWriterInitialized) {
+				initializeDeamonWriter();
+				isDeamonWriterInitialized = true;
+			}
+		}
 		return this.birdData.add(birdData);
 	}
 
@@ -73,7 +81,7 @@ public class StorageService implements InitializingBean {
 		return new ArrayList<>(birdSightingData);
 	}
 
-	public void storeDataToTheDisk() {
+	public synchronized void storeDataToTheDisk() {
 		try {
 			storeDataToTheDisk(birdPath, birdData);
 			storeDataToTheDisk(birdSightingPath, birdSightingData);
@@ -109,5 +117,20 @@ public class StorageService implements InitializingBean {
 			Collection<E> storedData = (Collection<E>) inputStream.readObject();
 			collection.addAll(storedData);
 		}
+	}
+
+	private void initializeDeamonWriter() {
+		Thread thread = new Thread(() -> {
+			try {
+				while (true) {
+					storeDataToTheDisk();
+					Thread.sleep(TimeUnit.SECONDS.toMillis(5L));
+				}
+			} catch (InterruptedException e) {
+				Logger.getLogger(StorageService.class.getName()).log(Level.INFO, "Deamon writer exception", e);
+			}
+		});
+		thread.setDaemon(true);
+		thread.start();
 	}
 }

@@ -2,6 +2,7 @@ package ua.dp.dmma.bird.server.application;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.ServerSocket;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -9,6 +10,10 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.glassfish.grizzly.http.server.HttpServer;
+import org.glassfish.grizzly.http.server.NetworkListener;
+import org.glassfish.grizzly.nio.transport.TCPNIOTransport;
+import org.glassfish.grizzly.nio.transport.TCPNIOTransportBuilder;
+import org.glassfish.grizzly.threadpool.ThreadPoolConfig;
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
@@ -32,6 +37,7 @@ public class ServerApplication {
 	public static void main(String[] args) {
 		try {
 			ServerConsoleArguments serverArguments = getServerStartUpOptions(args);
+
 			URI baseURI = getBaseURI(serverArguments.getPort());
 			setStorageLocationFolder(serverArguments.getFolder());
 
@@ -40,7 +46,9 @@ public class ServerApplication {
 					new AnnotationConfigApplicationContext(SpringAnnotationConfig.class));
 
 			final HttpServer server = GrizzlyHttpServerFactory.createHttpServer(baseURI, resourceConfig, false);
-			
+
+			setProcCount(server, serverArguments.getProcCount());
+
 			Runtime.getRuntime().addShutdownHook(new Thread(server::shutdownNow));
 			server.start();
 			Logger.getLogger(ServerApplication.class.getName()).log(Level.INFO,
@@ -52,21 +60,87 @@ public class ServerApplication {
 		}
 	}
 
+	/**
+	 * Parses and validates start up input parameters
+	 * 
+	 * @param args
+	 *            console arguments
+	 * @return parsed arguments
+	 */
 	private static ServerConsoleArguments getServerStartUpOptions(String[] args) {
 		ServerConsoleArguments arguments = new ServerConsoleArguments();
 		JCommander.newBuilder().addObject(arguments).build().parse(args);
 		return arguments;
 	}
 
-	private static URI getBaseURI(Integer port) {
+	/**
+	 * Constructs base URI for server
+	 * 
+	 * @param port
+	 *            TCP port on which server will listen for incoming requests
+	 * @return server's URI
+	 * @throws IOException
+	 */
+	private static URI getBaseURI(Integer port) throws IOException {
+		checkPortAvailability(port);
 		return URI.create("http://localhost:" + getValueOrDefault(port, DEFAULT_PORT));
 	}
 
-	private static void setStorageLocationFolder(String storageLocation) throws IOException {
-		String locaion = getValueOrDefault(storageLocation, DEFAULT_STORAGE_LOCATION);
-		StorageService.storageLocationFolder = Files.createDirectories(Paths.get(locaion + File.separator + "serverdata"));
+	/**
+	 * Checks whether the port is available
+	 * @param port port number
+	 * @throws IOException
+	 */
+	private static void checkPortAvailability(Integer port) throws IOException {
+		try (ServerSocket serverSocket = new ServerSocket(port)) {
+			serverSocket.setReuseAddress(true);
+		}
 	}
 
+	/**
+	 * Sets storage location for storage service. If folder doesn't exist, method
+	 * will create them
+	 * 
+	 * @param storageLocation
+	 * @see StorageService
+	 * @throws IOException
+	 */
+	private static void setStorageLocationFolder(String storageLocation) throws IOException {
+		String locaion = getValueOrDefault(storageLocation, DEFAULT_STORAGE_LOCATION);
+		StorageService.storageLocationFolder = Files
+				.createDirectories(Paths.get(locaion + File.separator + "serverdata"));
+	}
+
+	/**
+	 * Configures thread pool for server's TCP transport
+	 * 
+	 * @param httpServer
+	 *            server for configuration
+	 * @param argumentProcCount
+	 *            number of threads to process requests
+	 */
+	private static void setProcCount(HttpServer httpServer, Integer argumentProcCount) {
+		Integer procCount = getValueOrDefault(argumentProcCount, DEFAULT_PROC_COUNT);
+
+		NetworkListener listener = httpServer.getListener("grizzly");
+		final TCPNIOTransportBuilder builder = TCPNIOTransportBuilder.newInstance();
+
+		final ThreadPoolConfig config = ThreadPoolConfig.defaultConfig();
+		config.setCorePoolSize(procCount).setMaxPoolSize(procCount).setQueueLimit(-1);
+		builder.setWorkerThreadPoolConfig(config);
+		final TCPNIOTransport transport = builder.build();
+		listener.setTransport(transport);
+	}
+
+	/**
+	 * Returns value if is not null, otherwise default value will be returned
+	 * 
+	 * @param value
+	 *            value to be checked for null
+	 * @param defaultValue
+	 *            some default value
+	 * @return
+	 */
 	private static <T> T getValueOrDefault(T value, T defaultValue) {
 		return value != null ? value : defaultValue;
 	}

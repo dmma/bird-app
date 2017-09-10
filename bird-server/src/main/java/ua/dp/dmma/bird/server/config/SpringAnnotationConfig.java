@@ -4,6 +4,8 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
 /**
+ * Spring configuration for web application.
+ * 
  * @author dmma
  */
 @Configuration
