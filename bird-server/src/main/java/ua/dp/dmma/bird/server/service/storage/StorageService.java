@@ -74,6 +74,12 @@ public class StorageService implements InitializingBean {
 	}
 
 	public void addBirdSighting(BirdSightingData birdSightingData) {
+		synchronized (this) {
+			if (!isDeamonWriterInitialized) {
+				initializeDeamonWriter();
+				isDeamonWriterInitialized = true;
+			}
+		}
 		this.birdSightingData.add(birdSightingData);
 	}
 

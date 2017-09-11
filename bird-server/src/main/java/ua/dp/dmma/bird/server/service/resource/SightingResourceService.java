@@ -1,9 +1,13 @@
 package ua.dp.dmma.bird.server.service.resource;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
@@ -34,7 +38,10 @@ public class SightingResourceService {
 
 	@GET
 	@Produces("application/json")
-	public Response getSightingList() {
-		return Response.ok(storageService.getBirdSightingList()).build();
+	@Path("/{name}")
+	public Response getSightingList(@PathParam("name") String birdName) {
+		List<BirdSightingData> filteredList = storageService.getBirdSightingList().stream()
+				.filter(bs -> birdName.equals(bs.getName())).collect(Collectors.toList());
+		return Response.ok(filteredList).build();
 	}
 }
