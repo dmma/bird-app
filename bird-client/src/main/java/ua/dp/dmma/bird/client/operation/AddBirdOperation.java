@@ -4,11 +4,14 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.reflect.Field;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 
 import ua.dp.dmma.bird.client.dto.BirdData;
 
@@ -20,10 +23,16 @@ public class AddBirdOperation extends BaseOperation {
 			BirdData request = createBirdData();
 			Response response = ClientBuilder.newClient().target(getServerURL()).path("bird").request()
 					.post(Entity.entity(request, MediaType.APPLICATION_JSON));
-			System.out.println(response.getStatus());
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+
+			if (Status.CREATED.getStatusCode() == response.getStatus()) {
+				System.out.println(String.format("Bird %s successfully added to the database", request.getName()));
+			} else if (Status.CONFLICT.getStatusCode() == response.getStatus()) {
+				System.out.println(String.format("Bird %s was added to the database earlier", request.getName()));
+			} else {
+				System.out.println("Error adding bird to the database");
+			}
+		} catch (IOException | IllegalArgumentException | IllegalAccessException e) {
+			Logger.getLogger(AddBirdOperation.class.getName()).log(Level.INFO, "Error filling bird data", e);
 		}
 	}
 

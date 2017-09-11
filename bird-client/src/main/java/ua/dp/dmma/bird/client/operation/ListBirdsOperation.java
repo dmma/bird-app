@@ -16,8 +16,11 @@ public class ListBirdsOperation extends BaseOperation {
 		List<BirdData> list = ClientBuilder.newClient().target(getServerURL()).path("bird").request()
 				.get(new GenericType<List<BirdData>>() {
 				});
-		Logger.getLogger(ListBirdsOperation.class.getName()).log(Level.INFO, String
-				.format("Birds table%n %s%n %s %s", getTableHeader(), getTableContent(list), getTableCount(list)));
+		list.sort((b1, b2) -> {
+			return b1.getName().compareTo(b2.getName());
+		});
+		Logger.getLogger(ListBirdsOperation.class.getName()).log(Level.INFO, String.format("Birds table%n%s%n%s%s",
+				getTableHeader(), getTableContent(list), getTableCount(list)));
 	}
 
 	private String getTableHeader() {
@@ -43,6 +46,6 @@ public class ListBirdsOperation extends BaseOperation {
 	}
 
 	private String getTableCount(List<BirdData> list) {
-		return new String("Total number of sirds present on the server is " + list.size());
+		return new String("Total number of birds present on the server is " + list.size());
 	}
 }
