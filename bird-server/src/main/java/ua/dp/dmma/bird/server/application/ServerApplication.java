@@ -9,6 +9,7 @@ import java.nio.file.Paths;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.beust.jcommander.ParameterException;
 import org.glassfish.grizzly.http.server.HttpServer;
 import org.glassfish.grizzly.http.server.NetworkListener;
 import org.glassfish.grizzly.nio.transport.TCPNIOTransport;
@@ -53,7 +54,7 @@ public class ServerApplication
 
             Thread.currentThread().join();
         }
-        catch (IOException | InterruptedException ex)
+        catch (IOException | InterruptedException | ParameterException ex)
         {
             Logger.getLogger(ServerApplication.class.getName()).log(Level.SEVERE, null, ex);
         }

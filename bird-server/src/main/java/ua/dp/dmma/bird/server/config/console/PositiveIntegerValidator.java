@@ -14,6 +14,11 @@ public class PositiveIntegerValidator implements IParameterValidator
     @Override
     public void validate(String name, String value) throws ParameterException
     {
+        if (value.chars().anyMatch(v -> !Character.isDigit(v)))
+        {
+            throw new ParameterException("Invalid number value " + value + " Parameter must be digit between 1 and 65535");
+        }
+
         if (Integer.valueOf(value) < 0)
         {
             throw new ParameterException("Parameter " + name + " must be positive. But your passed " + value);
