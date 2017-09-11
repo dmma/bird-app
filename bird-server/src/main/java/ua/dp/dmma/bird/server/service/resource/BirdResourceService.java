@@ -17,34 +17,35 @@ import ua.dp.dmma.bird.server.model.BirdData;
 import ua.dp.dmma.bird.server.service.storage.StorageService;
 
 /**
- * 
  * @author dmma
- *
  */
 @Path("/bird")
 @Service
-public class BirdResourceService {
+public class BirdResourceService
+{
+    @Autowired
+    private StorageService storageService;
 
-	@Autowired
-	private StorageService storageService;
+    @POST
+    @Consumes("application/json")
+    public Response saveBird(BirdData birdData)
+    {
+        Status status = storageService.addBird(birdData) ? Status.CREATED : Status.CONFLICT;
+        return Response.status(status).build();
+    }
 
-	@POST
-	@Consumes("application/json")
-	public Response saveBird(BirdData birdData) {
-		Status status = storageService.addBird(birdData) ? Status.CREATED : Status.CONFLICT;
-		return Response.status(status).build();
-	}
+    @DELETE
+    @Path("/{name}")
+    public Response removeBird(@PathParam("name") String birdName)
+    {
+        Status status = storageService.removeBird(birdName) ? Status.ACCEPTED : Status.CONFLICT;
+        return Response.status(status).build();
+    }
 
-	@DELETE
-	@Path("/{name}")
-	public Response removeBird(@PathParam("name") String birdName) {
-		Status status = storageService.removeBird(birdName) ? Status.ACCEPTED : Status.CONFLICT;
-		return Response.status(status).build();
-	}
-
-	@GET
-	@Produces("application/json")
-	public Response getBirdList() {
-		return Response.ok(storageService.getBirdList()).build();
-	}
+    @GET
+    @Produces("application/json")
+    public Response getBirdList()
+    {
+        return Response.ok(storageService.getBirdList()).build();
+    }
 }

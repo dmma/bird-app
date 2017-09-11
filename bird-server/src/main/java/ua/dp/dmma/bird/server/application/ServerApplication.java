@@ -24,124 +24,125 @@ import ua.dp.dmma.bird.server.config.SpringAnnotationConfig;
 import ua.dp.dmma.bird.server.config.console.ServerConsoleArguments;
 import ua.dp.dmma.bird.server.service.storage.StorageService;
 
-/**
- * 
- * @author dmma
- *
- */
-public class ServerApplication {
-	private static final int DEFAULT_PORT = 3000;
-	private static final int DEFAULT_PROC_COUNT = 2;
-	private static final String DEFAULT_STORAGE_LOCATION = System.getProperty("user.home");
+public class ServerApplication
+{
+    private static final int DEFAULT_PORT = 3000;
+    private static final int DEFAULT_PROC_COUNT = 2;
+    private static final String DEFAULT_STORAGE_LOCATION = System.getProperty("user.home");
 
-	public static void main(String[] args) {
-		try {
-			ServerConsoleArguments serverArguments = getServerStartUpOptions(args);
+    public static void main(String[] args)
+    {
+        try
+        {
+            ServerConsoleArguments serverArguments = getServerStartUpOptions(args);
 
-			URI baseURI = getBaseURI(serverArguments.getPort());
-			setStorageLocationFolder(serverArguments.getFolder());
+            URI baseURI = getBaseURI(serverArguments.getPort());
+            setStorageLocationFolder(serverArguments.getFolder());
 
-			final ServerApplicationConfig resourceConfig = new ServerApplicationConfig();
-			resourceConfig.property("contextConfig",
-					new AnnotationConfigApplicationContext(SpringAnnotationConfig.class));
+            final ServerApplicationConfig resourceConfig = new ServerApplicationConfig();
+            resourceConfig.property("contextConfig", new AnnotationConfigApplicationContext(SpringAnnotationConfig.class));
 
-			final HttpServer server = GrizzlyHttpServerFactory.createHttpServer(baseURI, resourceConfig, false);
+            final HttpServer server = GrizzlyHttpServerFactory.createHttpServer(baseURI, resourceConfig, false);
 
-			setProcCount(server, serverArguments.getProcCount());
+            setProcCount(server, serverArguments.getProcCount());
 
-			Runtime.getRuntime().addShutdownHook(new Thread(server::shutdownNow));
-			server.start();
-			Logger.getLogger(ServerApplication.class.getName()).log(Level.INFO,
-					String.format("Application started.%nTry out %s%nStop the application using CTRL+C", baseURI));
+            Runtime.getRuntime().addShutdownHook(new Thread(server::shutdownNow));
+            server.start();
+            Logger.getLogger(ServerApplication.class.getName())
+                            .log(Level.INFO, String.format("Application started.%nTry out %s%nStop the application using CTRL+C", baseURI));
 
-			Thread.currentThread().join();
-		} catch (IOException | InterruptedException ex) {
-			Logger.getLogger(ServerApplication.class.getName()).log(Level.SEVERE, null, ex);
-		}
-	}
+            Thread.currentThread().join();
+        }
+        catch (IOException | InterruptedException ex)
+        {
+            Logger.getLogger(ServerApplication.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
 
-	/**
-	 * Parses and validates start up input parameters
-	 * 
-	 * @param args
-	 *            console arguments
-	 * @return parsed arguments
-	 */
-	private static ServerConsoleArguments getServerStartUpOptions(String[] args) {
-		ServerConsoleArguments arguments = new ServerConsoleArguments();
-		JCommander.newBuilder().addObject(arguments).build().parse(args);
-		return arguments;
-	}
+    /**
+     * Parses and validates start up input parameters
+     *
+     * @param args console arguments
+     * @return parsed arguments
+     */
+    private static ServerConsoleArguments getServerStartUpOptions(String[] args)
+    {
+        ServerConsoleArguments arguments = new ServerConsoleArguments();
+        JCommander.newBuilder().addObject(arguments).build().parse(args);
+        return arguments;
+    }
 
-	/**
-	 * Constructs base URI for server
-	 * 
-	 * @param port
-	 *            TCP port on which server will listen for incoming requests
-	 * @return server's URI
-	 * @throws IOException
-	 */
-	private static URI getBaseURI(Integer port) throws IOException {
-		checkPortAvailability(port);
-		return URI.create("http://localhost:" + getValueOrDefault(port, DEFAULT_PORT));
-	}
+    /**
+     * Constructs base URI for server
+     *
+     * @param port TCP port on which server will listen for incoming requests
+     * @return server's URI
+     * @throws IOException if port is already used by another application
+     */
+    private static URI getBaseURI(Integer port) throws IOException
+    {
+        checkPortAvailability(port);
+        return URI.create("http://localhost:" + getValueOrDefault(port, DEFAULT_PORT));
+    }
 
-	/**
-	 * Checks whether the port is available
-	 * @param port port number
-	 * @throws IOException
-	 */
-	private static void checkPortAvailability(Integer port) throws IOException {
-		try (ServerSocket serverSocket = new ServerSocket(port)) {
-			serverSocket.setReuseAddress(true);
-		}
-	}
+    /**
+     * Checks whether the port is available
+     *
+     * @param port port number
+     * @throws IOException if port is not available
+     */
+    private static void checkPortAvailability(Integer port) throws IOException
+    {
+        try (ServerSocket serverSocket = new ServerSocket(port))
+        {
+            serverSocket.setReuseAddress(true);
+        }
+    }
 
-	/**
-	 * Sets storage location for storage service. If folder doesn't exist, method
-	 * will create them
-	 * 
-	 * @param storageLocation
-	 * @see StorageService
-	 * @throws IOException
-	 */
-	private static void setStorageLocationFolder(String storageLocation) throws IOException {
-		String locaion = getValueOrDefault(storageLocation, DEFAULT_STORAGE_LOCATION);
-		StorageService.storageLocationFolder = Files
-				.createDirectories(Paths.get(locaion + File.separator + "serverdata"));
-	}
+    /**
+     * Sets storage location for storage service. If folder doesn't exist, method
+     * will create them.<br/>
+     *
+     * @param storageLocation location for creating data storage directory
+     * @throws IOException       if parent directory is not exists
+     * @throws SecurityException if {@link SecurityManager#checkWrite(String) checkWrite} or {@link SecurityManager#checkRead(String) checkRead} are failed
+     * @see StorageService
+     */
+    private static void setStorageLocationFolder(String storageLocation) throws IOException
+    {
+        String location = getValueOrDefault(storageLocation, DEFAULT_STORAGE_LOCATION);
+        StorageService.storageLocationFolder = Files.createDirectories(Paths.get(location + File.separator + "serverdata"));
+    }
 
-	/**
-	 * Configures thread pool for server's TCP transport
-	 * 
-	 * @param httpServer
-	 *            server for configuration
-	 * @param argumentProcCount
-	 *            number of threads to process requests
-	 */
-	private static void setProcCount(HttpServer httpServer, Integer argumentProcCount) {
-		Integer procCount = getValueOrDefault(argumentProcCount, DEFAULT_PROC_COUNT);
+    /**
+     * Configures thread pool for server's TCP transport
+     *
+     * @param httpServer        server for configuration
+     * @param argumentProcCount number of threads to process requests
+     */
+    private static void setProcCount(HttpServer httpServer, Integer argumentProcCount)
+    {
+        Integer procCount = getValueOrDefault(argumentProcCount, DEFAULT_PROC_COUNT);
 
-		NetworkListener listener = httpServer.getListener("grizzly");
-		final TCPNIOTransportBuilder builder = TCPNIOTransportBuilder.newInstance();
+        NetworkListener listener = httpServer.getListener("grizzly");
+        final TCPNIOTransportBuilder builder = TCPNIOTransportBuilder.newInstance();
 
-		final ThreadPoolConfig config = ThreadPoolConfig.defaultConfig();
-		config.setCorePoolSize(procCount).setMaxPoolSize(procCount).setQueueLimit(-1);
-		builder.setWorkerThreadPoolConfig(config);
-		final TCPNIOTransport transport = builder.build();
-		listener.setTransport(transport);
-	}
+        final ThreadPoolConfig config = ThreadPoolConfig.defaultConfig();
+        config.setCorePoolSize(procCount).setMaxPoolSize(procCount).setQueueLimit(-1);
+        builder.setWorkerThreadPoolConfig(config);
+        final TCPNIOTransport transport = builder.build();
+        listener.setTransport(transport);
+    }
 
-	/**
-	 * Returns value if is not null, otherwise default value will be returned
-	 * 
-	 * @param value
-	 *            value to be checked for null
-	 * @param defaultValue
-	 *            some default value
-	 * @return
-	 */
-	private static <T> T getValueOrDefault(T value, T defaultValue) {
-		return value != null ? value : defaultValue;
-	}
+    /**
+     * Returns value if is not null, otherwise default value will be returned
+     *
+     * @param value        value to be checked for null
+     * @param defaultValue some default value
+     * @return value or default if value == null
+     */
+    private static <T> T getValueOrDefault(T value, T defaultValue)
+    {
+        return value != null ? value : defaultValue;
+    }
 }

@@ -5,92 +5,105 @@ import java.math.BigDecimal;
 
 import javax.json.bind.annotation.JsonbProperty;
 
-/**
- * @author dmma
- */
-public class BirdData implements Serializable, Comparable<BirdData> {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -2996648682884920749L;
+public class BirdData implements Serializable, Comparable<BirdData>
+{
+    /**
+     *
+     */
+    private static final long serialVersionUID = -2996648682884920749L;
 
-	@JsonbProperty
-	private String name;
-	@JsonbProperty
-	private String color;
-	@JsonbProperty
-	private BigDecimal weight;
-	@JsonbProperty
-	private BigDecimal height;
+    @JsonbProperty
+    private String name;
+    @JsonbProperty
+    private String color;
+    @JsonbProperty
+    private BigDecimal weight;
+    @JsonbProperty
+    private BigDecimal height;
 
-	public BirdData() {
-		
-	}
-	
-	public BirdData(String name) {
-		this.name = name;
-	}
+    public BirdData()
+    {
 
-	public String getName() {
-		return name;
-	}
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public BirdData(String name)
+    {
+        this.name = name;
+    }
 
-	public String getColor() {
-		return color;
-	}
+    public String getName()
+    {
+        return name;
+    }
 
-	public void setColor(String color) {
-		this.color = color;
-	}
+    public void setName(String name)
+    {
+        this.name = name;
+    }
 
-	public BigDecimal getWeight() {
-		return weight;
-	}
+    public String getColor()
+    {
+        return color;
+    }
 
-	public void setWeight(BigDecimal weight) {
-		this.weight = weight;
-	}
+    public void setColor(String color)
+    {
+        this.color = color;
+    }
 
-	public BigDecimal getHeight() {
-		return height;
-	}
+    public BigDecimal getWeight()
+    {
+        return weight;
+    }
 
-	public void setHeight(BigDecimal height) {
-		this.height = height;
-	}
+    public void setWeight(BigDecimal weight)
+    {
+        this.weight = weight;
+    }
 
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((name == null) ? 0 : name.hashCode());
-		return result;
-	}
+    public BigDecimal getHeight()
+    {
+        return height;
+    }
 
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		BirdData other = (BirdData) obj;
-		if (name == null) {
-			if (other.name != null)
-				return false;
-		} else if (!name.equals(other.name))
-			return false;
-		return true;
-	}
+    public void setHeight(BigDecimal height)
+    {
+        this.height = height;
+    }
 
-	@Override
-	public int compareTo(BirdData o) {
-		return this.name.compareTo(o.getName());
-	}
+    @Override
+    public int hashCode()
+    {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((name == null) ? 0 : name.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj)
+    {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        BirdData other = (BirdData) obj;
+        if (name == null)
+        {
+            if (other.name != null)
+                return false;
+        }
+        else if (!name.equals(other.name))
+            return false;
+        return true;
+    }
+
+    @Override
+    public int compareTo(BirdData o)
+    {
+        return this.name.compareTo(o.getName());
+    }
 
 }
