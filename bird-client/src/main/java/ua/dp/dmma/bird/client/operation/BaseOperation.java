@@ -1,27 +1,33 @@
 package ua.dp.dmma.bird.client.operation;
 
 /**
- * 
  * @author dmma
- *
  */
-public abstract class BaseOperation {
+public abstract class BaseOperation
+{
+    private String serverURL;
 
-	private String serverURL;
+    public abstract void execute();
 
-	public abstract void execute();
+    /**
+     * Performs execute method for selected operation and than shut down the client application
+     *
+     * @param portNumber target server port number
+     */
+    public void executeOperation(int portNumber)
+    {
+        serverURL = "http://localhost:" + portNumber;
+        execute();
+        quit();
+    }
 
-	public void executeOperation(int portNumber) {
-		serverURL = "http://localhost:" + portNumber;
-		execute();
-		quit();
-	}
+    private void quit()
+    {
+        System.exit(0);
+    }
 
-	private void quit() {
-		System.exit(0);
-	}
-
-	protected String getServerURL() {
-		return serverURL;
-	}
+    String getServerURL()
+    {
+        return serverURL;
+    }
 }

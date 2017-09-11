@@ -2,11 +2,6 @@ package ua.dp.dmma.bird.client.dto;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
-/**
- * 
- * @author dmma
- *
- */
 @XmlRootElement
 public class BirdSightingData {
 	private String name;

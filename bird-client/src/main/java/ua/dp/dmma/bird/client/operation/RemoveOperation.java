@@ -10,33 +10,43 @@ import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
-public class RemoveOperation extends BaseOperation {
+public class RemoveOperation extends BaseOperation
+{
 
-	@Override
-	public void execute() {
+    @Override
+    public void execute()
+    {
+        try
+        {
+            String name = getBirdName();
+            Response response = ClientBuilder.newClient().target(getServerURL()).path("bird").path(name).request().delete();
+            if (Status.ACCEPTED.getStatusCode() == response.getStatus())
+            {
+                System.out.println(String.format("Bird %s successfully removed from the database", name));
+            }
+            else if (Status.CONFLICT.getStatusCode() == response.getStatus())
+            {
+                System.out.println(String.format("Bird %s was removed from the database earlier", name));
+            }
+            else
+            {
+                System.out.println("Error removing bird from the database");
+            }
+        }
+        catch (IOException e)
+        {
+            Logger.getLogger(AddBirdOperation.class.getName()).log(Level.INFO, "Error filling bird name", e);
+        }
 
-		try {
-			String name = getBirdName();
-			Response response = ClientBuilder.newClient().target(getServerURL()).path("bird").path(name).request()
-					.delete();
-			if (Status.ACCEPTED.getStatusCode() == response.getStatus()) {
-				System.out.println(String.format("Bird %s successfully removed from the database", name));
-			} else if (Status.CONFLICT.getStatusCode() == response.getStatus()) {
-				System.out.println(String.format("Bird %s was removed from the database earlier", name));
-			} else {
-				System.out.println(String.format("Error removing bird from the database", name));
-			}
-		} catch (IOException e) {
-			Logger.getLogger(AddBirdOperation.class.getName()).log(Level.INFO, "Error filling bird name", e);
-		}
+    }
 
-	}
-
-	private String getBirdName() throws IOException {
-		try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(System.in))) {
-			System.out.println("Please enter bird name for removing");
-			return bufferedReader.readLine();
-		}
-	}
+    private String getBirdName() throws IOException
+    {
+        try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(System.in)))
+        {
+            System.out.println("Please enter bird name for removing");
+            return bufferedReader.readLine();
+        }
+    }
 
 }

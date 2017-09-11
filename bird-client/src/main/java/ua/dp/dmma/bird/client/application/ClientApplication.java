@@ -22,26 +22,31 @@ import ua.dp.dmma.bird.client.operation.RemoveOperation;
 
 public class ClientApplication {
 
-	private static Map<String, Class<? extends BaseOperation>> operations = new HashMap<>();
+    private static final Map<String, Class<? extends BaseOperation>> OPERATIONS = new HashMap<>();
 
-	static {
-		operations.put("-quit", QuitOperation.class);
-		operations.put("-addbird", AddBirdOperation.class);
-		operations.put("-listbirds", ListBirdsOperation.class);
-		operations.put("-remove", RemoveOperation.class);
-		operations.put("-addsighting", AddSightingOperation.class);
-		operations.put("-listsightings", ListSightingsOperation.class);
-	}
+    static
+    {
+        OPERATIONS.put("-quit", QuitOperation.class);
+        OPERATIONS.put("-addbird", AddBirdOperation.class);
+        OPERATIONS.put("-listbirds", ListBirdsOperation.class);
+        OPERATIONS.put("-remove", RemoveOperation.class);
+        OPERATIONS.put("-addsighting", AddSightingOperation.class);
+        OPERATIONS.put("-listsightings", ListSightingsOperation.class);
+    }
 
-	public static void main(String[] args) throws InstantiationException, IllegalAccessException {
+	public static void main(String[] args) throws InstantiationException, IllegalAccessException
+	{
 		ClientConsoleArguments arguments = new ClientConsoleArguments();
-		JCommander jCommander = JCommander.newBuilder().addObject(arguments).addCommand(new QuitCommand())
-				.addCommand(new AddBirdCommand()).addCommand(new AddSightingCommand())
-				.addCommand(new ListBirdsCommand()).addCommand(new ListSightingsCommand())
-				.addCommand(new RemoveCommand()).build();
-		jCommander.parse(args);
+		JCommander jCommander = JCommander.newBuilder().addObject(arguments)
+						.addCommand(new QuitCommand())
+						.addCommand(new AddBirdCommand())
+						.addCommand(new AddSightingCommand())
+						.addCommand(new ListBirdsCommand())
+						.addCommand(new ListSightingsCommand())
+						.addCommand(new RemoveCommand()).build();
+        jCommander.parse(args);
 
-		Class<? extends BaseOperation> clazz = operations.get(jCommander.getParsedCommand());
-		clazz.newInstance().executeOperation(arguments.getPort());
-	}
+        Class<? extends BaseOperation> clazz = OPERATIONS.get(jCommander.getParsedCommand());
+        clazz.newInstance().executeOperation(arguments.getPort());
+    }
 }
