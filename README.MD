@@ -1,11 +1,11 @@
 Client-server application
 =========================
 
+Compiling and packaging stage in root folder
+> mvn clean package
+
 Server application
 __________________
-
-Compiling and packaging stage
-> mvn clean package
 
 You can launch server application use following command in bird-server directory
 > java -jar target/bird-server.jar -port portNumber -proc_count procCount -data dataStorageDirectory
