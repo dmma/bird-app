@@ -82,7 +82,8 @@ public class ServerApplication
      */
     private static URI getBaseURI(Integer port) throws IOException
     {
-        checkPortAvailability(port);
+
+        checkPortAvailability(getValueOrDefault(port, DEFAULT_PORT));
         return URI.create("http://localhost:" + getValueOrDefault(port, DEFAULT_PORT));
     }
 

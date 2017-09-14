@@ -2,6 +2,7 @@ package ua.dp.dmma.bird.server.config;
 
 import javax.ws.rs.ApplicationPath;
 
+import org.glassfish.jersey.jackson.JacksonFeature;
 import org.glassfish.jersey.logging.LoggingFeature;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.server.spring.scope.RequestContextFilter;
@@ -20,5 +21,6 @@ public class ServerApplicationConfig extends ResourceConfig
         register(RequestContextFilter.class);
         packages("ua.dp.dmma.bird.server.service.resource");
         register(LoggingFeature.class);
+        register(JacksonFeature.class);
     }
 }
