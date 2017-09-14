@@ -19,7 +19,7 @@ public class PositiveIntegerValidator implements IParameterValidator
             throw new ParameterException("Invalid number value " + value + " Parameter must be digit between 1 and 65535");
         }
 
-        if (Integer.valueOf(value) < 0)
+        if (Integer.valueOf(value) < 1)
         {
             throw new ParameterException("Parameter " + name + " must be positive. But your passed " + value);
         }

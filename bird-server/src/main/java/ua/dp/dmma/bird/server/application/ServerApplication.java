@@ -166,8 +166,6 @@ public class ServerApplication
         }
     }
 
-
-
     /**
      * Configures thread pool for server's TCP transport
      *
