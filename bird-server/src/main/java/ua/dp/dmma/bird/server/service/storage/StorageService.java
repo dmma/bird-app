@@ -36,8 +36,8 @@ import ua.dp.dmma.bird.server.model.BirdSightingData;
 public class StorageService implements InitializingBean
 {
     public static Path storageLocationFolder;
-    private static final String BIRD_STORAGE_FILE_NAME = "bird.data";
-    private static final String BIRD_SIGHTING_STORAGE_FILE_NAME = "sighting.data";
+    public static final String BIRD_STORAGE_FILE_NAME = "bird.data";
+    public static final String BIRD_SIGHTING_STORAGE_FILE_NAME = "sighting.data";
 
     private Set<BirdData> birdData = new ConcurrentSkipListSet<>();
     private List<BirdSightingData> birdSightingData = new CopyOnWriteArrayList<>();

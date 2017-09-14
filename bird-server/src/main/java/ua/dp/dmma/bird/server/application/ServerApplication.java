@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.URI;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -24,6 +25,9 @@ import ua.dp.dmma.bird.server.config.ServerApplicationConfig;
 import ua.dp.dmma.bird.server.config.SpringAnnotationConfig;
 import ua.dp.dmma.bird.server.config.console.ServerConsoleArguments;
 import ua.dp.dmma.bird.server.service.storage.StorageService;
+
+import static ua.dp.dmma.bird.server.service.storage.StorageService.BIRD_SIGHTING_STORAGE_FILE_NAME;
+import static ua.dp.dmma.bird.server.service.storage.StorageService.BIRD_STORAGE_FILE_NAME;
 
 public class ServerApplication
 {
@@ -54,9 +58,9 @@ public class ServerApplication
 
             Thread.currentThread().join();
         }
-        catch (IOException | InterruptedException | ParameterException ex)
+        catch (IOException | InterruptedException ex)
         {
-            Logger.getLogger(ServerApplication.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ServerApplication.class.getName()).log(Level.WARNING, ex.getMessage());
         }
     }
 
@@ -69,7 +73,15 @@ public class ServerApplication
     private static ServerConsoleArguments getServerStartUpOptions(String[] args)
     {
         ServerConsoleArguments arguments = new ServerConsoleArguments();
-        JCommander.newBuilder().addObject(arguments).build().parse(args);
+        try
+        {
+            JCommander.newBuilder().addObject(arguments).build().parse(args);
+        }
+        catch (ParameterException e)
+        {
+            Logger.getLogger(ServerApplication.class.getName()).log(Level.WARNING, e.getMessage());
+            System.exit(0);
+        }
         return arguments;
     }
 
@@ -78,11 +90,9 @@ public class ServerApplication
      *
      * @param port TCP port on which server will listen for incoming requests
      * @return server's URI
-     * @throws IOException if port is already used by another application
      */
     private static URI getBaseURI(Integer port) throws IOException
     {
-
         checkPortAvailability(getValueOrDefault(port, DEFAULT_PORT));
         return URI.create("http://localhost:" + getValueOrDefault(port, DEFAULT_PORT));
     }
@@ -91,13 +101,17 @@ public class ServerApplication
      * Checks whether the port is available
      *
      * @param port port number
-     * @throws IOException if port is not available
      */
-    private static void checkPortAvailability(Integer port) throws IOException
+    private static void checkPortAvailability(Integer port)
     {
         try (ServerSocket serverSocket = new ServerSocket(port))
         {
             serverSocket.setReuseAddress(true);
+        }
+        catch (IOException e)
+        {
+            Logger.getLogger(ServerApplication.class.getName()).log(Level.WARNING, String.format("Port %s is used by another application", port));
+            System.exit(0);
         }
     }
 
@@ -106,15 +120,53 @@ public class ServerApplication
      * will create them.<br/>
      *
      * @param storageLocation location for creating data storage directory
-     * @throws IOException       if parent directory is not exists
+     * @throws IOException       if an I/O during directory creation
      * @throws SecurityException if {@link SecurityManager#checkWrite(String) checkWrite} or {@link SecurityManager#checkRead(String) checkRead} are failed
      * @see StorageService
      */
     private static void setStorageLocationFolder(String storageLocation) throws IOException
     {
         String location = getValueOrDefault(storageLocation, DEFAULT_STORAGE_LOCATION);
-        StorageService.storageLocationFolder = Files.createDirectories(Paths.get(location + File.separator + "serverdata"));
+        Path storagePath = Files.createDirectories(Paths.get(location + File.separator + "serverdata"));
+        validateAccessPermissions(storagePath);
+        validateStorageFilesAccessPermissions(storagePath);
+        StorageService.storageLocationFolder = storagePath;
     }
+
+    /**
+     * Validates if user has permissions for read and write operation for file
+     * @param directoryPath storage directory
+     */
+    private static void validateStorageFilesAccessPermissions(Path directoryPath)
+    {
+        validateAccessPermissions(Paths.get(directoryPath + File.separator + BIRD_STORAGE_FILE_NAME));
+        validateAccessPermissions(Paths.get(directoryPath + File.separator + BIRD_SIGHTING_STORAGE_FILE_NAME));
+    }
+
+    /**
+     * Validates if user has permissions for read and write operation for file
+     * @param filePath target object for permissions checking
+     */
+    private static void validateAccessPermissions(Path filePath){
+        if (Files.exists(filePath))
+        {
+            File file = filePath.toFile();
+            if (!file.canWrite())
+            {
+                Logger.getLogger(ServerApplication.class.getName())
+                                .log(Level.WARNING, String.format("You do not have write access permission for path %s", file.getAbsolutePath()));
+                System.exit(0);
+            }
+            if (!file.canRead())
+            {
+                Logger.getLogger(ServerApplication.class.getName())
+                                .log(Level.WARNING, String.format("You do not have read access permission for path %s", file.getAbsolutePath()));
+                System.exit(0);
+            }
+        }
+    }
+
+
 
     /**
      * Configures thread pool for server's TCP transport
