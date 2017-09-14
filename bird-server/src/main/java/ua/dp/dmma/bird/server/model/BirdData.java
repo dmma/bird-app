@@ -1,25 +1,21 @@
 package ua.dp.dmma.bird.server.model;
 
 import java.io.Serializable;
-import java.math.BigDecimal;
 
 import javax.json.bind.annotation.JsonbProperty;
 
 public class BirdData implements Serializable, Comparable<BirdData>
 {
-    /**
-     *
-     */
-    private static final long serialVersionUID = -2996648682884920749L;
+    private static final long serialVersionUID = -8044206813456597310L;
 
     @JsonbProperty
     private String name;
     @JsonbProperty
     private String color;
     @JsonbProperty
-    private BigDecimal weight;
+    private Double weight;
     @JsonbProperty
-    private BigDecimal height;
+    private Double height;
 
     public BirdData()
     {
@@ -51,22 +47,22 @@ public class BirdData implements Serializable, Comparable<BirdData>
         this.color = color;
     }
 
-    public BigDecimal getWeight()
+    public Double getWeight()
     {
         return weight;
     }
 
-    public void setWeight(BigDecimal weight)
+    public void setWeight(Double weight)
     {
         this.weight = weight;
     }
 
-    public BigDecimal getHeight()
+    public Double getHeight()
     {
         return height;
     }
 
-    public void setHeight(BigDecimal height)
+    public void setHeight(Double height)
     {
         this.height = height;
     }

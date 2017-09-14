@@ -4,16 +4,23 @@ Client-server application
 Server application
 __________________
 
+Compiling and packaging stage
+> mvn clean package
+
 You can launch server application use following command in bird-server directory
-> mvn clean compile exec:java
+> java -jar target/bird-server.jar -port portNumber -proc_count procCount -data dataStorageDirectory
 
-List of console arguments is specified via settings for exec-maven-plugin in pom.xml file, tag commandlineArgs
-
+where
+    - **-port** - Port number for starting server
+    - **-proc_count** - Number of available threads for incoming requests 
+    - **-data** - Directory for storing server information
 
 Client application
 __________________ 
 
 You can launch server application use following command in bird-client directory
-> mvn clean compile exec:java
+> java -jar target/bird-client.jar -portNumber portNumber -command
 
-List of console arguments is specified via settings for exec-maven-plugin in pom.xml file, tag commandlineArgs
+where 
+    - **-portNumber** - Port number for connection
+    - **-command** - Expected one of commands [-remove, -quit, -listbirds, -addbird, -listsightings, -addsighting]

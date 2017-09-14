@@ -6,18 +6,14 @@ import javax.json.bind.annotation.JsonbProperty;
 
 public class BirdSightingData implements Serializable
 {
-    /**
-     *
-     */
-    private static final long serialVersionUID = 6172047460667925791L;
+    private static final long serialVersionUID = 7435474605560847900L;
+
     @JsonbProperty
     private String name;
     @JsonbProperty
     private String location;
     @JsonbProperty
-    private String date;
-    @JsonbProperty
-    private String time;
+    private Long dateTime;
 
     public String getName()
     {
@@ -39,14 +35,13 @@ public class BirdSightingData implements Serializable
         this.location = location;
     }
 
-    public String getDate()
+    public Long getDateTime()
     {
-        return date;
+        return dateTime;
     }
 
-    public void setDate(String date)
+    public void setDateTime(Long dateTime)
     {
-        this.date = date;
+        this.dateTime = dateTime;
     }
-
 }
