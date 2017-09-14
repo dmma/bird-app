@@ -4,6 +4,9 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.reflect.Field;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -18,7 +21,6 @@ import ua.dp.dmma.bird.client.dto.BirdSightingData;
 
 public class AddSightingOperation extends BaseOperation
 {
-
     @Override
     public void execute()
     {
@@ -50,13 +52,21 @@ public class AddSightingOperation extends BaseOperation
         {
             for (Field field : BirdSightingData.class.getDeclaredFields())
             {
-                System.out.println("Please enter " + field.getName() + " value");
-                String value = bufferedReader.readLine();
-                field.setAccessible(true);
-                field.set(birdSightingData, value);
+                if ("dateTime".equals(field.getName()))
+                {
+                    Long value = getDateTimeValueFromConsole("date and time", DATE_TIME_SDF, bufferedReader);
+                    field.setAccessible(true);
+                    field.set(birdSightingData, value);
+                }
+                else
+                {
+                    System.out.println("Please enter " + field.getName() + " value");
+                    String value = bufferedReader.readLine();
+                    field.setAccessible(true);
+                    field.set(birdSightingData, value);
+                }
             }
         }
         return birdSightingData;
     }
-
 }

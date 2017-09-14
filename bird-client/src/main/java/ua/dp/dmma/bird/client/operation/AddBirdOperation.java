@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.reflect.Field;
+import java.math.BigDecimal;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -43,7 +44,7 @@ public class AddBirdOperation extends BaseOperation
         }
         catch (IOException | IllegalArgumentException | IllegalAccessException e)
         {
-            Logger.getLogger(AddBirdOperation.class.getName()).log(Level.INFO, "Error filling bird data", e);
+            Logger.getLogger(AddBirdOperation.class.getName()).log(Level.WARNING, "Error filling bird data", e);
         }
     }
 
@@ -54,12 +55,23 @@ public class AddBirdOperation extends BaseOperation
         {
             for (Field field : BirdData.class.getDeclaredFields())
             {
-                System.out.println("Please enter " + field.getName() + " value");
-                String value = bufferedReader.readLine();
-                field.setAccessible(true);
-                field.set(birdData, value);
+                if ("weight".equals(field.getName()) || "height".equals(field.getName()))
+                {
+                    Double doubleValue = getDoubleValueFromConsole(field.getName(), bufferedReader);
+                    field.setAccessible(true);
+                    field.set(birdData, doubleValue);
+                }
+                else
+                {
+                    System.out.println("Please enter " + field.getName() + " value");
+                    String value = bufferedReader.readLine();
+                    field.setAccessible(true);
+                    field.set(birdData, value);
+                }
             }
         }
         return birdData;
     }
+
+
 }

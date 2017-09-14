@@ -86,7 +86,7 @@ public class ClientApplication
         }
         catch (IOException e)
         {
-            Logger.getLogger(ClientApplication.class.getName()).log(Level.WARNING, String.format("Connecting to server application on port %s", port));
+            Logger.getLogger(ClientApplication.class.getName()).log(Level.INFO, String.format("Connecting to server application on port %s", port));
         }
     }
 }

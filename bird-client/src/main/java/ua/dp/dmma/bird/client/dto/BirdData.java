@@ -7,8 +7,8 @@ public class BirdData
 {
     private String name;
     private String color;
-    private String weight;
-    private String height;
+    private Double weight;
+    private Double height;
 
     public String getName()
     {
@@ -30,22 +30,22 @@ public class BirdData
         this.color = color;
     }
 
-    public String getWeight()
+    public Double getWeight()
     {
         return weight;
     }
 
-    public void setWeight(String weight)
+    public void setWeight(Double weight)
     {
         this.weight = weight;
     }
 
-    public String getHeight()
+    public Double getHeight()
     {
         return height;
     }
 
-    public void setHeight(String height)
+    public void setHeight(Double height)
     {
         this.height = height;
     }

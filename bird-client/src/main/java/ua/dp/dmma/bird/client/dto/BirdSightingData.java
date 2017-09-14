@@ -6,8 +6,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class BirdSightingData {
 	private String name;
 	private String location;
-	private String date;
-	private String time;
+	private Long dateTime;
 
 	public String getName() {
 		return name;
@@ -25,20 +24,13 @@ public class BirdSightingData {
 		this.location = location;
 	}
 
-	public String getDate() {
-		return date;
+	public Long getDateTime()
+	{
+		return dateTime;
 	}
 
-	public void setDate(String date) {
-		this.date = date;
+	public void setDateTime(Long dateTime)
+	{
+		this.dateTime = dateTime;
 	}
-
-	public String getTime() {
-		return time;
-	}
-
-	public void setTime(String time) {
-		this.time = time;
-	}
-
 }
