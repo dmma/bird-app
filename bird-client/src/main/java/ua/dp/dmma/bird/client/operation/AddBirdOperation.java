@@ -13,6 +13,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import org.glassfish.jersey.jackson.JacksonFeature;
 import ua.dp.dmma.bird.client.dto.BirdData;
 
 public class AddBirdOperation extends BaseOperation
@@ -24,7 +25,7 @@ public class AddBirdOperation extends BaseOperation
         try
         {
             BirdData request = createBirdData();
-            Response response = ClientBuilder.newClient().target(getServerURL()).path("bird").request()
+            Response response = ClientBuilder.newClient().register(JacksonFeature.class).target(getServerURL()).path("bird").request()
                             .post(Entity.entity(request, MediaType.APPLICATION_JSON));
 
             if (Status.CREATED.getStatusCode() == response.getStatus())

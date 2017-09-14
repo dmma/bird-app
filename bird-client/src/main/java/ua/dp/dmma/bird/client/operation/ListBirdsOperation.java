@@ -7,6 +7,7 @@ import java.util.logging.Logger;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.core.GenericType;
 
+import org.glassfish.jersey.jackson.JacksonFeature;
 import ua.dp.dmma.bird.client.dto.BirdData;
 
 public class ListBirdsOperation extends BaseOperation
@@ -15,7 +16,8 @@ public class ListBirdsOperation extends BaseOperation
     @Override
     public void execute()
     {
-        List<BirdData> list = ClientBuilder.newClient().target(getServerURL()).path("bird").request().get(new GenericType<List<BirdData>>()
+        List<BirdData> list = ClientBuilder.newClient().register(JacksonFeature.class).target(getServerURL()).path("bird").request()
+                        .get(new GenericType<List<BirdData>>()
         {
         });
         list.sort((b1, b2) -> b1.getName().compareTo(b2.getName()));
@@ -25,7 +27,7 @@ public class ListBirdsOperation extends BaseOperation
 
     private String getTableHeader()
     {
-        return "|name    |color    |weight    |height    |";
+        return "|name    |color    |weight    |height    |" + System.getProperty("line.separator") + "------------------------------------------";
     }
 
     private String getTableContent(List<BirdData> list)

@@ -10,6 +10,7 @@ import java.util.logging.Logger;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.core.GenericType;
 
+import org.glassfish.jersey.jackson.JacksonFeature;
 import ua.dp.dmma.bird.client.dto.BirdSightingData;
 
 public class ListSightingsOperation extends BaseOperation
@@ -21,7 +22,7 @@ public class ListSightingsOperation extends BaseOperation
         try
         {
             String name = getBirdName();
-            List<BirdSightingData> list = ClientBuilder.newClient().target(getServerURL()).path("sighting").path(name).request()
+            List<BirdSightingData> list = ClientBuilder.newClient().register(JacksonFeature.class).target(getServerURL()).path("sighting").path(name).request()
                             .get(new GenericType<List<BirdSightingData>>()
                             {
                             });

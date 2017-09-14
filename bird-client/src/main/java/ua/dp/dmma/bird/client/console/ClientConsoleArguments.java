@@ -7,7 +7,7 @@ import com.beust.jcommander.Parameter;
  */
 public class ClientConsoleArguments
 {
-    @Parameter(names = { "-serverPort", "-p" })
+    @Parameter(names = { "-serverPort", "-p" }, validateWith = PortNumberValidator.class)
     private Integer port = 3000;
 
     public Integer getPort()

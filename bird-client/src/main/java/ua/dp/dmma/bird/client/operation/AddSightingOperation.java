@@ -13,6 +13,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import org.glassfish.jersey.jackson.JacksonFeature;
 import ua.dp.dmma.bird.client.dto.BirdSightingData;
 
 public class AddSightingOperation extends BaseOperation
@@ -24,7 +25,7 @@ public class AddSightingOperation extends BaseOperation
         try
         {
             BirdSightingData request = createBirdSightingData();
-            Response response = ClientBuilder.newClient().target(getServerURL()).path("sighting").request()
+            Response response = ClientBuilder.newClient().register(JacksonFeature.class).target(getServerURL()).path("sighting").request()
                             .post(Entity.entity(request, MediaType.APPLICATION_JSON));
 
             if (Status.CREATED.getStatusCode() == response.getStatus())

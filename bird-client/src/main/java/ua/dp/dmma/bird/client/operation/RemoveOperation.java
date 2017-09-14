@@ -1,5 +1,7 @@
 package ua.dp.dmma.bird.client.operation;
 
+import org.glassfish.jersey.jackson.JacksonFeature;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -19,7 +21,7 @@ public class RemoveOperation extends BaseOperation
         try
         {
             String name = getBirdName();
-            Response response = ClientBuilder.newClient().target(getServerURL()).path("bird").path(name).request().delete();
+            Response response = ClientBuilder.newClient().register(JacksonFeature.class).target(getServerURL()).path("bird").path(name).request().delete();
             if (Status.ACCEPTED.getStatusCode() == response.getStatus())
             {
                 System.out.println(String.format("Bird %s successfully removed from the database", name));
